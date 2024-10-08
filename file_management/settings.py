@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework', # We are using the Django REST Framework
+    'files.apps.FilesConfig', # We added our app here
 ]
 
 MIDDLEWARE = [

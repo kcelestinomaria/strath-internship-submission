@@ -1,11 +1,14 @@
-#from django.shortcuts import render
+from django.shortcuts import redirect
 from rest_framework import viewsets
 from .models import Directory, File
 from .serializers import DirectorySerializer, FileSerializer
 from rest_framework.response import Response
 
+def redirect_to_api(request):
+    return redirect('/api/directories/')  # Redirect to the main directories endpoint
+
 class DirectoryViewSet(viewsets.ModelViewSet):
-    """API view for managing directories"""
+    """API view for managing directories."""
     queryset = Directory.objects.all()
     serializer_class = DirectorySerializer
 
