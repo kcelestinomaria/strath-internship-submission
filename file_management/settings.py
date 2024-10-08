@@ -75,8 +75,8 @@ WSGI_APPLICATION = 'file_management.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.sqlite3', # Use SQLIte for simplicity
+        'NAME': BASE_DIR / 'db.sqlite3', # Path to the SQLite Database
     }
 }
 
