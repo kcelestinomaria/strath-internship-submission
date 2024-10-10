@@ -9,6 +9,15 @@ class Directory(models.Model):
     def __str__(self):
         return self.name
     
+    def get_absolute_path(self):
+        """Get the absolute path of this directory in the filesystem"""
+        path = self.name 
+        parent = self.parent
+        while parent:
+            path = os.path.join(parent.name, path)
+            parent = parent.parent
+        return path
+    
 class File(models.Model):
     """Django Model to represent a file in the filesystem."""
     name = models.CharField(max_length=255)
@@ -18,3 +27,7 @@ class File(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_path(self):
+        """Get the absolute file path"""
+        return os.path.join(self.directory.get_absolute_path(), self.name)
