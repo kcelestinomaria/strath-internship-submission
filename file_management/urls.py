@@ -17,9 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from files.views import redirect_to_api # redirects to endpoint view
+from files import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', redirect_to_api, name='redirect-to-api'), # for the root url
     path('api/', include('files.urls')), # Include the file management app's URLs
+    path('api/files/', views.list_files, name='list_files'),
+    path('api/files/<int:file_id>/', views.delete_file, name='delete_file'),
+    path('api/files/upload/', views.upload_file, name='upload_file'),
+    path('api/directories/', views.list_directories, name='list_directories'),
+    path('api/directories/create/', views.create_directory, name='create_directory'),
+    path('api/directories/<int:directory_id>/', views.delete_directory, name='delete_directory'),
 ]
