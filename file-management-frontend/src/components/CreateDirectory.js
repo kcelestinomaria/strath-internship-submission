@@ -1,29 +1,37 @@
-// src/components/CreateDirectory.js
 import React, { useState } from 'react';
+import { createDirectory } from '../api';
 
-const CreateDirectory = ({ onAddDirectory }) => {
-    const [directoryName, setDirectoryName] = useState('');
+const CreateDirectory = ({ setDirectories, setError }) => {
+  const [directoryName, setDirectoryName] = useState('');
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (directoryName.trim()) {
-            onAddDirectory(directoryName);
-            setDirectoryName(''); // Clear input
-        }
-    };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!directoryName) {
+      setError('Directory name cannot be empty');
+      return;
+    }
+    try {
+      const newDirectory = await createDirectory({ name: directoryName });
+      setDirectories((prev) => [...prev, newDirectory]);
+      setDirectoryName('');
+      setError(null); // Clear error on success
+    } catch (error) {
+      setError('Failed to create directory');
+    }
+  };
 
-    return (
-        <form onSubmit={handleSubmit} className="mb-4 flex">
-            <input
-                type="text"
-                value={directoryName}
-                onChange={(e) => setDirectoryName(e.target.value)}
-                placeholder="New Directory Name"
-                className="border border-gray-300 rounded-l px-4 py-2 flex-grow"
-            />
-            <button type="submit" className="bg-blue-500 text-white rounded-r px-4 py-2">Create</button>
-        </form>
-    );
+  return (
+    <form onSubmit={handleSubmit} className="mb-4">
+      <input
+        type="text"
+        value={directoryName}
+        onChange={(e) => setDirectoryName(e.target.value)}
+        placeholder="New Directory Name"
+        className="border p-2 w-1/2"
+      />
+      <button type="submit" className="ml-2 bg-blue-500 text-white p-2">Create</button>
+    </form>
+  );
 };
 
 export default CreateDirectory;
