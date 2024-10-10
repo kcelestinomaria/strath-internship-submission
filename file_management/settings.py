@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-f&i_7n$ci%-j_(6^&2vnpiw$$t$#fos!zx3lipinzac5d&3nr_
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '8000-kcelestinom-strathinter-0yq2hbvzuhr.ws-eu116.gitpod.io',
+    '127.0.0.1:8000'
+]
 
 
 # Application definition
@@ -36,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'corsheaders',
     'django.contrib.staticfiles',
     'rest_framework', # We are using the Django REST Framework
     'files.apps.FilesConfig', # We added our app here
@@ -46,10 +50,13 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True  # Use this in development, adjust in production
 
 ROOT_URLCONF = 'file_management.urls'
 
