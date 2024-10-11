@@ -1,15 +1,24 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api'; // Adjust for your Django API
+const API_URL = process.env.API_URL || 'http://localhost:8000/api'; // Use an environment variable for flexibility
+
+const handleError = (error) => {
+  if (error.response) {
+    return error.response.data; // Return server response
+  } else if (error.request) {
+    return 'Network error. Please try again later.';
+  } else {
+    return error.message;
+  }
+};
 
 // Fetch all directories
-export const fetchDirectories = async () => {
+export const fetchDirectories = async (signal) => {
   try {
-    const response = await fetch(`${API_URL}/directories/`);
-    if (!response.ok) throw new Error('Failed to fetch directories');
-    return await response.json();
+    const response = await axios.get(`${API_URL}/directories/`, { signal });
+    return response.data;
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching directories:', handleError(error));
     throw error;
   }
 };
@@ -17,17 +26,10 @@ export const fetchDirectories = async () => {
 // Create a new directory
 export const createDirectory = async (data) => {
   try {
-    const response = await fetch(`${API_URL}/directories/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) throw new Error('Failed to create directory');
-    return await response.json();
+    const response = await axios.post(`${API_URL}/directories/`, data);
+    return response.data;
   } catch (error) {
-    console.error(error);
+    console.error('Error creating directory:', handleError(error));
     throw error;
   }
 };
@@ -35,42 +37,68 @@ export const createDirectory = async (data) => {
 // Fetch files in a directory
 export const fetchFiles = async (directoryId) => {
   try {
-    const response = await fetch(`${API_URL}/directories/${directoryId}/files/`);
-    if (!response.ok) throw new Error('Failed to fetch files');
-    return await response.json();
+    const response = await axios.get(`${API_URL}/directories/${directoryId}/files/`);
+    return response.data;
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching files:', handleError(error));
     throw error;
   }
 };
 
-// Create a new file in a directory
+// Create a new file in a directory (single file)
 export const createFile = async (directoryId, file) => {
   const formData = new FormData();
   formData.append('file', file);
 
   try {
-    const response = await fetch(`${API_URL}/directories/${directoryId}/files/`, {
-      method: 'POST',
-      body: formData,
+    const response = await axios.post(`${API_URL}/directories/${directoryId}/files/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
     });
-    if (!response.ok) throw new Error('Failed to upload file');
-    return await response.json();
+    return response.data;
   } catch (error) {
-    console.error(error);
+    console.error('Error uploading file:', handleError(error));
+    throw error;
+  }
+};
+
+// Create multiple files in a directory
+export const createMultipleFiles = async (directoryId, files) => {
+  const formData = new FormData();
+  for (const file of files) {
+    formData.append('files', file);
+  }
+
+  try {
+    const response = await axios.post(`${API_URL}/directories/${directoryId}/files/`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error uploading multiple files:', handleError(error));
     throw error;
   }
 };
 
 // Delete a directory or file
-export const deleteFileOrDirectory = async (id) => {
+export const deleteFileOrDirectory = async (id, isDirectory = false) => {
   try {
-    const response = await fetch(`${API_URL}/directories/${id}/`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) throw new Error('Failed to delete');
+    await axios.delete(`${API_URL}/directories/${isDirectory ? '' : 'files/'}${id}/`);
   } catch (error) {
-    console.error(error);
+    console.error('Error deleting:', handleError(error));
     throw error;
+  }
+};
+
+// Rename a file or directory
+export const renameFileInBackend = async (fileId, newName, isDirectory) => {
+  try {
+    await axios.put(`${API_URL}/files/${fileId}/`, { name: newName, isDirectory });
+  } catch (error) {
+    console.error('Error renaming file/directory:', handleError(error));
+    throw error; // Re-throw the error for handling in the component
   }
 };

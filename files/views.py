@@ -4,6 +4,9 @@ from rest_framework.response import Response
 from .models import Directory, File
 from .serializers import DirectorySerializer, FileSerializer
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
 def list_files(request):
@@ -75,10 +78,16 @@ def get_files_in_directory(request, id):
 
 @api_view(['POST'])
 def create_directory(request):
+    logger.info(f"Request Method: {request.method}, Request Data: {request.data}")
+
+    # Deserialize the request data to create a new directory
     serializer = DirectorySerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    # Log validation errors
+    logger.error(f"Validation errors: {serializer.errors}")
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])

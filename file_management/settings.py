@@ -27,7 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '8000-kcelestinom-strathinter-0yq2hbvzuhr.ws-eu116.gitpod.io',
-    '127.0.0.1:8000'
+    '127.0.0.1:8000',
+    'localhost'
 ]
 
 
